@@ -152,7 +152,7 @@ public:
 		return *this;
 	}
 	Vector3<T> operator-() const {
-		return Vector3(-x, -y, -z);
+		return Vector3<T>(-x, -y, -z);
 	}
 	bool operator==(const Vector3<T> &v) const {
 		return x == v.x && y == v.y && z == v.z;
@@ -514,6 +514,136 @@ public:
 };
 typedef Normal3<Float> Normal3f;
 
+/************************************************************************/
+/* Homogeneous Coordinate Vector                                        */
+/************************************************************************/
+template <typename T>
+class Vector4
+{
+public:
+	Vector4() { x = y = z = 0; w = 1; }
+	Vector4(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
+	Vector4(T val[4]) : x(val[0]), y(val[1]), z(val[2]), w(val[3]) {}
+	explicit Vector4(const Point3<T> &p) : x(p.x), y(p.y), z(p.z), w(1) {}
+	explicit Vector4(const Point3<T> &p, T _w) : x(p.x * _w), y(p.y * _w), z(p.z * _w), w(_w) {}
+	explicit Vector4(const Vector3<T> &v) : x(v.x), y(v.y), z(v.z), w(0) {}
+	explicit Vector4(const Normal3<T> &n) : x(n.x), y(n.y), z(n.z), w(0) {}
+
+	bool hasNaN() const { return isNaN(x) || isNaN(y) || isNaN(z) || isNaN(w); }
+	bool isNull const{ return x == 0 && y == 0 z == 0 && w == 0; }
+
+		T operator[](int i) const {
+		Assert(i >= 0 && i <= 3);
+		if (i == 0) return x;
+		if (i == 1) return y;
+		if (i == 2) return z;
+		return w;
+	}
+	T &operator[](int i) {
+		Assert(i >= 0 && i <= 3);
+		if (i == 0) return x;
+		if (i == 1) return y;
+		if (i == 2) return z;
+		return w;
+	}
+	Vector4<T> operator+(const Vector4<T> &v) const {
+		Assert(!v.hasNaN());
+		return Vector4<T>(x + v.x, y + v.y, z + v.z, w + v.w);
+	}
+	Vector4<T> &operator+=(const Vector4<T> &v) {
+		Assert(!v.hasNaN());
+		x += v.x; y += v.y; z += v.z; w += v.w;
+		return *this;
+	}
+	Vector4<T> operator-(const Vector4<T> &v) const {
+		Assert(!v.hasNaN());
+		return Vector4<T>(x - v.x, y - v.y, z - v.z, w - v.w);
+	}
+	Vector4<T> &operator-=(const Vector4<T> &v) {
+		Assert(!v.hasNaN());
+		x -= v.x; y -= v.y; z -= v.z; w -= v.w;
+		return *this;
+	}
+	Vector4<T> operator-() const {
+		return Vector4<T>(-x, -y, -z, -w);
+	}
+	bool operator==(const Vector4<T> &v) const {
+		return false;
+		//return x == v.x && y == v.y && z == v.z && w == ;
+	}
+	bool operator!=(const Vector4<T> &v) const {
+		return true;
+		//return x != v.x || y != v.y || z != v.z;
+	}
+	Vector4<T> &operator=(const Point3<T> &p)
+	{
+		x = p.x; y = p.y; z = p.z; w = 1;
+	}
+	Vector4<T> &operator=(const Vector3<T> &v)
+	{
+		x = v.x; y = v.y; z = v.z; w = 0;
+	}
+	Vector4<T> &operator=(const Normal3<T> &n)
+	{
+		x = n.x; y = n.y; z = n.z; w = 0;
+	}
+	template <typename U>
+	Vector4<T> operator*(U s) const {
+		return Vector4<T>(x * s, y * s, z * s, w * s);
+	}
+	template <typename U>
+	friend Vector4<T> operator*(U s, const Vector4<T> &v) {
+		return v * s;
+	}
+	template <typename U>
+	Vector4<T> &operator*=(U s) {
+		Assert(!isNaN(s));
+		x *= s; y *= s; z *= s; w *= s;
+		return *this;
+	}
+	template <typename U>
+	Vector4<T> operator/(U f) const {
+		Assert(f != 0);
+		Float inv = (Float)1 / f;
+		return Vector4<T>(x * inv, y * inv, z * inv, w * inv);
+	}
+	template <typename U>
+	Vector4<T> &operator/=(U f) {
+		Assert(f != 0);
+		Float inv = (Float)1 / f;
+		x *= inv; y *= inv; z *= inv; w *= inv;
+		return *this;
+	}
+
+	Float lengthSquared() const {
+		if (w == 0) return x * x + y * y + z * z;
+		else return 0;
+	}
+	Float length() const { return std::sqrt(lengthSquared()); }
+	void normalize() { *this /= length(); }
+	Point3<T> point3() const {
+		if (w != 0) {
+			Float invW = (Float)1 / w;
+			return Point3<T>(x * invW, y * invW, z * invW);
+		}
+		else return Point3<T>();
+
+	}
+	Vector3<T> vector3() const {
+		if (w == 0) {
+			return Vector3<T>(x, y, z);
+		}
+		else return Vector3<T>();
+	}
+
+	friend std::ostream &operator<<(ostream& os, const Vector4<T> &v)
+	{
+		os << "[" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << "]";
+		return os;
+	}
+public:
+	T x, y, z, w;
+};
 /************************************************************************/
 /* Vector Implementation                                                */
 /************************************************************************/
