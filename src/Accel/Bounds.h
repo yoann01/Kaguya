@@ -17,8 +17,8 @@ public:
 	{
 		T minval = std::numeric_limits<T>::lowest();
 		T maxval = std::numeric_limits<T>::max();
-		pMin = Point2<T>(minval, minval);
-		pMax = Point2<T>(maxval, maxval);
+		pMin = Point2<T>(maxval, maxval);
+		pMax = Point2<T>(minval, minval);
 	}
 	Bounds2(const Point2<T> &p) : pMin(p), pMax(p) {}
 	Bounds2(const Point2<T> &p1, const Point2<T> &p2)
@@ -27,10 +27,7 @@ public:
 	{}
 	Bounds2(const vector<Point2<T>*> &pts)
 	{
-		T minval = std::numeric_limits<T>::lowest();
-		T maxval = std::numeric_limits<T>::max();
-		pMin = Point2<T>(minval, minval);
-		pMax = Point2<T>(maxval, maxval);
+		*this = Bounds2();
 		for (auto pt : pts) Union(*pt);
 	}
 
@@ -119,8 +116,8 @@ public:
 	{
 		T minval = std::numeric_limits<T>::lowest();
 		T maxval = std::numeric_limits<T>::max();
-		pMin = Point3<T>(minval, minval, minval);
-		pMax = Point3<T>(maxval, maxval, maxval);
+		pMin = Point3<T>(maxval, maxval, maxval);
+		pMax = Point3<T>(minval, minval, minval);
 	}
 	Bounds3(const Point3<T> &p) : pMin(p), pMax(p) {}
 	Bounds3(const Point3<T> &p1, const Point3<T> &p2)
@@ -129,10 +126,7 @@ public:
 	{}
 	Bounds3(const vector<Point3<T>*> &pts)
 	{
-		T minval = std::numeric_limits<T>::lowest();
-		T maxval = std::numeric_limits<T>::max();
-		pMin = Point3<T>(minval, minval, minval);
-		pMax = Point3<T>(maxval, maxval, maxval);
+		*this = Bounds3();
 		for (auto pt : pts) Union(*pt);
 	}
 	Bounds3(const Bounds3 &bound, const Matrix4x4 &mat)
